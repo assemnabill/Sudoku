@@ -37,13 +37,13 @@ public class TicTacToe extends PApplet {
 
     private int getIndex(int row, int col) {
         switch (row) {
-            case 0 -> {
+            case 0: {
                 return col;
             }
-            case 1 -> {
+            case 1: {
                 return col + 3;
             }
-            case 2 -> {
+            case 2: {
                 return col + 6;
             }
         }

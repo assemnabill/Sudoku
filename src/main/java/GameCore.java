@@ -23,7 +23,7 @@ public class GameCore implements GameEngine {
     }
 
     @Override
-    public void makeMove(int index) { // only one index
+    public void makeMove(int index) {
         try {
             board.setSquare(index);
         } catch (IndexOutOfBoundsException ex) {
