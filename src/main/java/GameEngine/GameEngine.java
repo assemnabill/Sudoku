@@ -1,10 +1,12 @@
 package GameEngine;
 
 public interface GameEngine {
-    char getSlotValue(int index);
-    void makeMove(int index);
 
-    boolean isGameOver();
-    char getWinner();
+    int readCellValue(int row, int col);
+    boolean writeCell(int row, int col, int value);
+    int[][] getSolution();
+    boolean checkSolution();
+    void startOver();
+    void generateNewPuzzle();
     void printBoard();
 }

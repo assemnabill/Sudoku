@@ -1,39 +1,51 @@
 import GameEngine.GameEngine;
 
 public class GameCore implements GameEngine {
-    private final GameBoard board;
+    private GameBoard board;
 
     public GameCore() {
         this.board = new GameBoard();
     }
 
     @Override
-    public boolean isGameOver() {
-        return board.isGameOver();
+    public int readCellValue(int row, int col) {
+        return board.getSquare(row, col);
     }
 
     @Override
-    public char getWinner() {
-        return board.getWinner();
+    public boolean writeCell(int row, int col, int digit) throws IllegalArgumentException{
+//        try {
+            board.setSquare(row, col, digit);
+//        }
+//        catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+        return board.getSquare(row,col) == digit;
     }
 
     @Override
-    public char getSlotValue(int index) {
-        return board.getSquare(index);
+    public int[][] getSolution() {
+        return board.getSolution();
     }
 
     @Override
-    public void makeMove(int index) {
-        try {
-            board.setSquare(index);
-        } catch (IndexOutOfBoundsException ex) {
-            ex.printStackTrace();
-        }
+    public boolean checkSolution() {
+        return board.testSolution();
+    }
+
+    @Override
+    public void startOver() {
+        board.reset();
+    }
+
+    @Override
+    public void generateNewPuzzle() {
+        board.generatePuzzle();
     }
 
     @Override
     public void printBoard() {
-        board.print();
+        System.out.println(board);
     }
 
 }
