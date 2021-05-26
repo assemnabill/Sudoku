@@ -7,25 +7,28 @@ public class GameCore implements GameEngine {
         this.board = new GameBoard();
     }
 
+    // for test
+    public GameCore(GameBoard b) {
+        this.board = b;
+    }
+
     @Override
     public int readCellValue(int row, int col) {
-        return board.getSquare(row, col);
+        return board.getCell(row, col);
     }
 
     @Override
-    public boolean writeCell(int row, int col, int digit) throws IllegalArgumentException{
-//        try {
-            board.setSquare(row, col, digit);
-//        }
-//        catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-        return board.getSquare(row,col) == digit;
+    public boolean writeCell(int row, int col, int digit) throws IllegalArgumentException {
+        if (board.setCell(row, col, digit)) {
+            return true;
+        } else {
+            throw new IllegalArgumentException("Invalid Value. Cannot set square to " + digit + " at (" + row + ", " + col + ")");
+        }
     }
 
     @Override
-    public int[][] getSolution() {
-        return board.getSolution();
+    public void solve() {
+        board.solve();
     }
 
     @Override
@@ -35,17 +38,12 @@ public class GameCore implements GameEngine {
 
     @Override
     public void startOver() {
-        board.reset();
+        board.resetBoard();
     }
 
     @Override
     public void generateNewPuzzle() {
         board.generatePuzzle();
-    }
-
-    @Override
-    public void printBoard() {
-        System.out.println(board);
     }
 
 }

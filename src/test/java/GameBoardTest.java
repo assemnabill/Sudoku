@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameBoardTest {
-
     GameBoard _gameBoard;
     int[][] _puzzle;
     int[][] _solution;
@@ -38,45 +37,34 @@ class GameBoardTest {
     }
 
     @Test
-    void setSquare() {
+    void whenSettingCell() {
         int value = 3;
-        _gameBoard.setSquare(0,1, value);
-        int result = _gameBoard.getSquare(0,1);
+        _gameBoard.setCell(0,1, value);
+        int result = _gameBoard.getCell(0,1);
+        // it should be written
         Assertions.assertEquals(value, result);
     }
 
     @Test
     public void whenSettingSquareOutOfBounds() {
         Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> {
-            _gameBoard.setSquare(9,9, 8);
+            _gameBoard.setCell(9,9, 8);
         });
-
         String expectedMessage = "Index 9 out of bounds for length 9";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
     @Test
-    public void whenSettingSquareWithInvalidValue() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            _gameBoard.setSquare(0,1, 9);
-        });
-
-        String expectedMessage = "Cannot set square to 9 at (0, 1)";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    @Test
-    void getSquare() {
-        int result = _gameBoard.getSquare(8,8); // 5
+    void whenGettingCell() {
+        int result = _gameBoard.getCell(8,8); // 5
         Assertions.assertEquals(5, result);
     }
 
     @Test
     public void whenGettingSquareOutOfBounds() {
         Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> {
-            _gameBoard.getSquare(9,9);
+            _gameBoard.getCell(9,9);
         });
 
         String expectedMessage = "Index 9 out of bounds for length 9";
@@ -85,38 +73,48 @@ class GameBoardTest {
     }
 
     @Test
-    void solve() {
+    void whenSolvingPuzzle() {
         int[][] result = _gameBoard.getSolution();
-//        System.out.println(_gameBoard);
-        Assertions.assertNotNull(result);
-        Assertions.assertNotEquals(_gameBoard.getBoard(),result);
+        // solution shouldn't be null or empty
+        assertNotNull(result);
+        assertNotEquals(result, new int[9][9]);
+        // solution must be correct
         Assertions.assertArrayEquals(_solution, result);
     }
 
     @Test
-    void generatePuzzle() {
-        // TODO
-        _gameBoard.generatePuzzle();
+    void whenGeneratingPuzzle() {
+        int[][] result = _gameBoard.generatePuzzle();
         System.out.println(_gameBoard.toString());
-//        _gameBoard.solve();
-//        System.out.println(Arrays.deepToString(_gameBoard.getSolution()));
-//        Assertions.assertFalse(Arrays.deepEquals(_gameBoard.getSolution(), _gameBoard.getSnapshot()));
+        // it shouldn't be null or empty
+        assertNotNull(result);
+        assertNotEquals(result, new int[9][9]);
+        // it should be solvable and has one solution
+        assertArrayEquals(result, _gameBoard.getSolution());
     }
 
     @Test
-    void testSolution() {
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
-                _gameBoard.setSquare(row,col,_solution[row][col]);
+    void whenTestingCorrectSolution() {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                _gameBoard.setCell(i,j, _solution[i][j]);
             }
         }
         _gameBoard.getSolution();
+        // it should be accepted
         assertTrue(_gameBoard.testSolution());
     }
 
     @Test
-    void reset() {
-        // TODO
-
+    void whenTestingWrongSolution() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                _gameBoard.setCell(i,j, _solution[i][j]);
+            }
+        }
+        _gameBoard.getSolution();
+        // it should be declined
+        assertFalse(_gameBoard.testSolution());
     }
+
 }

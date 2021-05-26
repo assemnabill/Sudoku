@@ -11,6 +11,7 @@ public class Sudoku extends PApplet {
     Button resetBtn;
     Button newBtn;
     Textlabel hintArea;
+    ControlGroup<Background> bg;
 
 
     public static void main(String[] args) {
@@ -47,6 +48,8 @@ public class Sudoku extends PApplet {
         final int red = color(0xCC, 0, 0);
         final int green = color(0, 0x99, 0);
         final int blue = color(0x33, 0x99, 0x99);
+        final int bgColor = color(0xFF, 0xFF, 0xCC);
+
         textAlign(CENTER, CENTER);
         textSize(27);
         noStroke();
@@ -60,8 +63,21 @@ public class Sudoku extends PApplet {
         resetBtn = createButton(s.BTN_RESET, btnXPos, btnYPos, green);
         btnYPos += s.BTN_OFFSET + s.BTN_HEIGHT;
         newBtn = createButton(s.BTN_NEW, btnXPos, btnYPos, blue);
-        hintArea = gui.addLabel("")
-                .setFont(new ControlFont(createFont(s.FONT_NAME, s.FONT_SIZE)));
+
+        hintArea = gui.addLabel("hintArea")
+                .setColorLabel(0)
+                .setWidth(s.SIZE_BOARD)
+                .setHeight(s.SIZE_CELL)
+                .setText("")
+                .setFont(new ControlFont(createFont(s.FONT_NAME, s.FONT_SIZE)))
+                .setPosition(s.OFFSET, s.SIZE_BOARD + s.OFFSET + s.BTN_OFFSET);
+
+        bg = gui.addBackground("footer")
+                .setSize(s.SIZE_BOARD, s.BTN_HEIGHT / 2)
+                .setPosition(hintArea.getPosition()[0], hintArea.getPosition()[1]);
+        bg.setBackgroundColor(s.COLOR_BG);
+
+//        System.out.println("does bgColor have correct value? " + (bg.getColor().getBackground() == s.COLOR_BG));
         drawBoard();
         addListeners();
     }
@@ -99,15 +115,29 @@ public class Sudoku extends PApplet {
     }
 
     private void addListeners() {
-        CallbackListener listener = callbackEvent -> {
-            callbackEvent.getController().setColorActive(s.COLOR_BG);
-            System.out.println(callbackEvent.getController());
-        };
-        checkBtn.onClick(listener);
-        solveBtn.onClick(listener);
-        resetBtn.onClick(listener);
-        newBtn.onClick(listener);
+        checkBtn.onClick(callbackEvent -> {
+            boolean result = gameEngine.checkSolution();
+            notify("This solution is " + result);
+        });
 
+        solveBtn.onClick(callbackEvent -> {
+            gameEngine.solve();
+            drawBoard();
+            notify("That was it already!");
+        });
+
+        resetBtn.onClick(callbackEvent -> {
+            gameEngine.startOver();
+            drawBoard();
+            notify("Puzzle ist reset!");
+        });
+        newBtn.onClick(callbackEvent -> {
+            gameEngine.generateNewPuzzle();
+            drawBoard();
+            notify("Generated new puzzle!");
+        });
+//        hintArea.setUpdate(true);
+//        hintArea.onClick(e -> hintArea.hide());
     }
 
     public void mouseClicked() {
@@ -123,9 +153,7 @@ public class Sudoku extends PApplet {
             int value = 5;
             setSquare(row, col, value);
         }
-
     }
-
 
     private void setSquare(int row, int col, int value) {
         try {
@@ -147,7 +175,8 @@ public class Sudoku extends PApplet {
     }
 
     private void flash(int row, int col) {
-        frameRate(1);
+        // todo fix
+//        frameRate(1);
         fill(color(0xff, 0xc0, 0xb8, 60)); //#FFC0B8
         // flash col
         rect(s.OFFSET + (s.SIZE_CELL * col), s.OFFSET, s.SIZE_CELL, s.SIZE_BOARD);
@@ -157,24 +186,17 @@ public class Sudoku extends PApplet {
     }
 
     private void notify(String notification) {
-        // todo fix
-        if (hintArea.isVisible() && hintArea.getName().equals(notification)) {
-            noStroke();
-            fill(s.COLOR_BG);
-            rect(hintArea.getPosition()[0], hintArea.getPosition()[0], hintArea.getWidth(), hintArea.getHeight());
+        Controller<?> controller = gui.getController("hintArea");
+        if (controller != null) {
+            if (!controller.getStringValue().equals(notification)) {
+                controller.setStringValue(notification);
+            }
         }
-        hintArea = gui.addLabel(notification)
-                .setColorBackground(color(0xFF, 0xFF, 0xCC))
-                .setColorLabel(0)
-                .setWidth(s.SIZE_BOARD)
-                .setHeight(s.SIZE_CELL)
-                .setText(notification)
-                .setFont(new ControlFont(createFont(s.FONT_NAME, s.FONT_SIZE)))
-                .setPosition(s.OFFSET, s.SIZE_BOARD + s.OFFSET + s.BTN_OFFSET);
-        hintArea.onClick(e -> hintArea.hide());
-        hintArea.show();
     }
 
     public void draw() {
+        frameRate(5);
+        background(s.COLOR_BG);
+        drawBoard();
     }
 }
