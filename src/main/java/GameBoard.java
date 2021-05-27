@@ -1,4 +1,7 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class GameBoard {
     // Constants with package visibility
@@ -8,9 +11,10 @@ public class GameBoard {
     // Sudoku fanatics have claimed that the smallest number
     // of starting clues a Sudoku puzzle can contain is 17.
     static final int CLUES_COUNT = 19;
-    private int[][] puzzle = new int[9][9];
-    private int[][] board = new int[9][9];
+    private int[][] initialPuzzle = new int[9][9];
+    private int[][] gameBoard = new int[9][9];
     private int[][] solution = null;
+    ArrayList<Integer> possibilities = new ArrayList<>();
     private char[] line;
 
     protected GameBoard() {
@@ -18,8 +22,8 @@ public class GameBoard {
     }
 
     // constructor is for testing
-    protected GameBoard(int[][] board) {
-        this.board = board;
+    protected GameBoard(int[][] gameBoard) {
+        this.gameBoard = gameBoard;
     }
 
     protected int[][] generatePuzzle() {
@@ -30,8 +34,8 @@ public class GameBoard {
 
         while (!isSolvable) {
             generated = initPuzzle();
-            this.board = deepCopy(generated);
-            this.puzzle = deepCopy(generated);
+            this.initialPuzzle = deepCopy(generated);
+            this.gameBoard = deepCopy(this.initialPuzzle);
             isSolvable = solve(0, 0, generated);
 //            permutations++;
         }
@@ -62,11 +66,11 @@ public class GameBoard {
     }
 
     private int randomValue() {
-        return (int) Math.ceil(Math.random() * 9);
+        return (int) Math.ceil(Math.random() * GRID_SIZE);
     }
 
     private boolean isEmpty(int row, int col, int[][] board) {
-        if (board == null) { board = this.board; }
+        if (board == null) { board = this.gameBoard; }
         return board[row][col] == EMPTY_CELL;
     }
 
@@ -97,17 +101,6 @@ public class GameBoard {
         return false;
     }
 
-    //    private static void printSolution(int[][] result) {
-//        int N = result.length;
-//        for (int i = 0; i < N; i++) {
-//            String ret = "";
-//            for (int j = 0; j < N; j++) {
-//                ret += result[i][j] + " ";
-//            }
-//            System.out.println(ret);
-//        }
-//        System.out.println();
-//    }
     private boolean isValidValue(int row, int col, int val, int[][] board) {
         // check columns/rows
         for (int i = 0; i < 9; i++) {
@@ -118,8 +111,8 @@ public class GameBoard {
         // check regions
         int regionRowOffset = row - row % SIDE_SIZE;
         int regionColOffset = col - col % SIDE_SIZE;
-        for (int k = 0; k < 3; ++k) {
-            for (int m = 0; m < 3; ++m) {
+        for (int k = 0; k < SIDE_SIZE; ++k) {
+            for (int m = 0; m < SIDE_SIZE; ++m) {
                 if (val == board[regionRowOffset + k][regionColOffset + m]) {
                     return false;
                 }
@@ -129,13 +122,13 @@ public class GameBoard {
     }
 
     protected boolean setCell(int row, int col, int digit) throws IndexOutOfBoundsException {
-        if (row > board.length || col > board[0].length) {
+        if (row > gameBoard.length || col > gameBoard[0].length) {
             throw new IndexOutOfBoundsException("Cannot set square at (" + row + ", " + col + ")");
         }
 
-        if (board[row][col] == 0) {
-            if (isValidValue(row, col, digit, board)) {
-                board[row][col] = digit;
+        if (gameBoard[row][col] == EMPTY_CELL || !isGiven(row,col)) {
+            if (isValidValue(row, col, digit, gameBoard)) {
+                gameBoard[row][col] = digit;
                 return true;
             }
         }
@@ -143,10 +136,10 @@ public class GameBoard {
     }
 
     protected int getCell(int row, int col) throws IndexOutOfBoundsException {
-        if (row > board.length || col > board[0].length) {
+        if (row > gameBoard.length || col > gameBoard[0].length) {
             throw new IndexOutOfBoundsException("Cannot get square at (" + row + ", " + col + ")");
         }
-        return board[row][col];
+        return gameBoard[row][col];
     }
 
     /**
@@ -161,7 +154,7 @@ public class GameBoard {
 
         // Row/Column traversal
         for (int i = 0; i < GRID_SIZE; i++) {
-            int[] row = board[i];
+            int[] row = gameBoard[i];
             if (i % SIDE_SIZE == 0) {
                 appendLine(buffer);
             }
@@ -195,20 +188,20 @@ public class GameBoard {
     }
 
     protected boolean testSolution() {
-        return Arrays.deepEquals(board, solution);
+        return Arrays.deepEquals(gameBoard, solution);
     }
 
     protected void resetBoard() {
-        this.board = deepCopy(puzzle);
+        this.gameBoard = deepCopy(initialPuzzle);
     }
 
     protected void solve() {
-        this.board = getSolution();
+        this.gameBoard = getSolution();
     }
 
     protected int[][] getSolution() {
         if (solution == null) {
-            int[][] tmp = deepCopy(board);
+            int[][] tmp = deepCopy(gameBoard);
             if (solve(0, 0, tmp)) {
                 solution = tmp;
             } else {
@@ -218,11 +211,39 @@ public class GameBoard {
         return deepCopy(solution);
     }
 
-    private int[][] getBoard() {
-        return deepCopy(board);
+    protected int[] calcPossibilities(int row, int col) {
+        int[][] tmp = deepCopy(this.gameBoard);
+        int regionRowOffset = row - row % SIDE_SIZE;
+        int regionColOffset = col - col % SIDE_SIZE;
+        int[] currRow = tmp[row];
+        int[] currCol = new int[GRID_SIZE];
+        int[] currReg = new int[GRID_SIZE];
+        // init column array
+        for (int i = 0; i < GRID_SIZE; i++) currCol[i] = tmp[i][col];
+
+        int i = 0; // init region array
+        while (i < GRID_SIZE)
+        for (int k = 0; k < SIDE_SIZE; k++) {
+            for (int m = 0; m < SIDE_SIZE; m++) {
+                currReg[i] = tmp[regionRowOffset+ k][regionColOffset+ m];
+                i++;
+            }
+        }
+
+        possibilities = IntStream.range(1, GRID_SIZE +1)
+                .filter(x -> IntStream.of(currRow).distinct().noneMatch(p -> p == x) &&
+                        IntStream.of(currCol).distinct().noneMatch(p -> p == x) &&
+                        IntStream.of(currReg).distinct().noneMatch(p -> p == x))
+                .boxed().collect(Collectors.toCollection(ArrayList::new));
+        System.out.println("possibilities: " + Arrays.toString(possibilities.toArray()));
+        return possibilities.stream().mapToInt(x -> x).toArray();
     }
 
     private int[][] deepCopy(int[][] matrix) {
         return java.util.Arrays.stream(matrix).map(el -> el.clone()).toArray($ -> matrix.clone());
+    }
+
+    public boolean isGiven(int row, int col) {
+        return initialPuzzle[row][col] != EMPTY_CELL;
     }
 }

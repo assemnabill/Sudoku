@@ -20,10 +20,16 @@ public class GameCore implements GameEngine {
     @Override
     public boolean writeCell(int row, int col, int digit) throws IllegalArgumentException {
         if (board.setCell(row, col, digit)) {
+            System.out.println("WRITE " + digit + "  (" + row + ", " + col + ")");
             return true;
         } else {
             throw new IllegalArgumentException("Invalid Value. Cannot set square to " + digit + " at (" + row + ", " + col + ")");
         }
+    }
+
+    @Override
+    public boolean isGiven(int row, int col) {
+        return board.isGiven(row, col);
     }
 
     @Override
@@ -44,6 +50,11 @@ public class GameCore implements GameEngine {
     @Override
     public void generateNewPuzzle() {
         board.generatePuzzle();
+    }
+
+    @Override
+    public int[] calculatePossibilities(int row, int col) {
+        return board.calcPossibilities(row, col);
     }
 
 }
