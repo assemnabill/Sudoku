@@ -8,13 +8,34 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://repo.huaweicloud.com/repository/maven/controlp5/controlp5/2.2.4/controlp5-2.2.4.jar"
+    }
+}
+
+// Macro downloads a jar library file and store it.
+def urlFile = { url, libName ->
+    File file = new File("$buildDir/download/${libName}.jar")
+    file.parentFile.mkdirs()
+    if (!file.exists()) {
+        new URL(url).withInputStream { downloadStream ->
+            file.withOutputStream { fileOut ->
+                fileOut << downloadStream
+            }
+        }
+    }
+    files(file.absolutePath)
 }
 
 dependencies {
+    /* ControlP5 by Andreas Schlegel
+     A GUI library to build custom user interfaces for desktop and android mode.
+     More info: http://www.sojamo.de/libraries/controlP5/
+     */
+    implementation compileClasspath(urlFile('https://repo.huaweicloud.com/repository/maven/controlp5/controlp5/2.2.4/controlp5-2.2.4.jar', 'controlp5'))
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     implementation files('src/main/java/core.jar')
-    implementation files('src/main/java/controlP5.jar')
 }
 
 test {

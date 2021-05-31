@@ -2,6 +2,7 @@ import GameEngine.GameEngine;
 import controlP5.*;
 import processing.core.PApplet;
 import java.util.Arrays;
+import java.util.List;
 
 public class Sudoku extends PApplet {
     GameEngine gameEngine;
@@ -13,6 +14,8 @@ public class Sudoku extends PApplet {
     Button newBtn;
     Textlabel statusBar;
     ButtonBar buttonBar;
+    private int selectedRow;
+    private int selectedCol;
 
 
     public static void main(String[] args) {
@@ -65,7 +68,7 @@ public class Sudoku extends PApplet {
         btnYPos += s.BTN_OFFSET + s.BTN_HEIGHT;
         newBtn = createButton(s.BTN_NEW, btnXPos, btnYPos, blue);
 
-        statusBar = gui.addLabel("statusBar")
+        statusBar = gui.addLabel(s.STATUS_BAR)
                 .setColorLabel(0)
                 .setWidth(s.SIZE_BOARD)
                 .setHeight(s.SIZE_CELL)
@@ -73,13 +76,12 @@ public class Sudoku extends PApplet {
                 .setFont(new ControlFont(createFont(s.FONT_NAME, s.FONT_SIZE)))
                 .setPosition(s.OFFSET, s.SIZE_BOARD + s.OFFSET + s.BTN_OFFSET);
 
-        buttonBar = gui.addButtonBar("possibilities")
+        buttonBar = gui.addButtonBar(s.BUTTON_BAR)
                 .setColorActive(color(0xCC, 0x99, 0x33))
                 .setColorValueLabel(color(30)) // text color
                 .setColorBackground(color(255))
                 .setVisible(false)
                 .setColorForeground(color(0xCA, 0x99, 0x33)); // hover color
-//        System.out.println("does bgColor have correct value? " + (bg.getColor().getBackground() == s.COLOR_BG));
         drawBoard();
         addListeners();
     }
@@ -128,24 +130,25 @@ public class Sudoku extends PApplet {
     private void addListeners() {
         checkBtn.onClick(callbackEvent -> {
             boolean result = gameEngine.checkSolution();
-            notify("This solution is " + result);
+            resetGUI();
+            notify(s.CHK_BTN_NOTIFICATION + result);
         });
 
         solveBtn.onClick(callbackEvent -> {
             gameEngine.solve();
             resetGUI();
-            notify("That was it already!");
+            notify(s.SLV_BTN_NOTIFICATION);
         });
 
         resetBtn.onClick(callbackEvent -> {
             gameEngine.startOver();
             resetGUI();
-            notify("Puzzle ist reset!");
+            notify(s.RST_BTN_NOTIFICATION);
         });
         newBtn.onClick(callbackEvent -> {
             gameEngine.generateNewPuzzle();
             resetGUI();
-            notify("Generated new puzzle!");
+            notify(s.NEW_BTN_NOTIFICATION);
         });
     }
 
@@ -153,21 +156,26 @@ public class Sudoku extends PApplet {
         // identify position
         int col = floor(map(mouseX, s.OFFSET, s.SIZE_BOARD + s.OFFSET, 0, 9));
         int row = floor(map(mouseY, s.OFFSET, s.SIZE_BOARD + s.OFFSET, 0, 9));
+        System.out.println(!buttonBar.isVisible());
         boolean boardIsClicked = (col >= 0 && col < 9)
                 && (row >= 0 && row < 9);
 
         if (boardIsClicked && !gameEngine.isGiven(row, col)) {
             System.out.println("CLICK ON BOARD " + "row: " + row + " col: " + col);
-            if (!gui.getController("possibilities").isVisible()) {
-                int[] possibilities = gameEngine.calculatePossibilities(row, col);
-                showPossibilities(row, col, possibilities);
+            if (!buttonBar.isVisible())  {
+                showPossibilities(row, col);
+//                if (selectedVal != null)
+//                setSquare(row, col, selectedVal);
             } else {
                 buttonBar.setVisible(false);
             }
         }
     }
 
-    private void showPossibilities(int row, int col, int[] possibilities) {
+    private void showPossibilities(int row, int col) {
+        selectedRow = row;
+        selectedCol = col;
+        int[] possibilities = gameEngine.calculatePossibilities(row, col);
         String[] items = split(Arrays.toString(possibilities)
                 .replaceAll("\\[|]|,|\\s", "\t"), "\t\t");
 
@@ -176,13 +184,13 @@ public class Sudoku extends PApplet {
                         (int) Math.ceil(s.SIZE_CELL * 0.5))
                 .addItems(items);
 
-        buttonBar.onClick(ev -> {
-            ButtonBar bar = (ButtonBar) ev.getController();
-            int index = (int) bar.getValue();
+        buttonBar.onChange(ev -> {
+            int index = (int) buttonBar.getValue();
             if (index < possibilities.length) {
-                int val = possibilities[index];
-                setSquare(row, col, val);
-                buttonBar.removeItems(Arrays.stream(items).toList());
+                int selectedVal = possibilities[index];
+                setSquare(selectedRow, selectedCol, selectedVal);
+                List<String> list = Arrays.stream(items).toList();
+                buttonBar.removeItems(list);
                 buttonBar.setSize(0,0);
             }
         });

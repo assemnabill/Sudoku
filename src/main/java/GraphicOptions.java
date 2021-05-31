@@ -20,5 +20,12 @@ public class GraphicOptions {
     final String BTN_SOLVE = "Solve Puzzle";
     final String BTN_RESET = "Start Over";
     final String BTN_NEW = "New Puzzle";
+    final String STATUS_BAR = "statusBar";
+    final String BUTTON_BAR = "possibilities";
+
+    final String CHK_BTN_NOTIFICATION = "This solution is ";
+    final String SLV_BTN_NOTIFICATION = "That was it already!";
+    final String RST_BTN_NOTIFICATION = "Puzzle ist reset!";
+    final String NEW_BTN_NOTIFICATION = "Generated new puzzle!";
 
 }

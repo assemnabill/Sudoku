@@ -37,6 +37,7 @@ public class GameBoard {
             this.initialPuzzle = deepCopy(generated);
             this.gameBoard = deepCopy(this.initialPuzzle);
             isSolvable = solve(0, 0, generated);
+            this.solution = deepCopy(generated);
 //            permutations++;
         }
         return generated;
@@ -201,7 +202,7 @@ public class GameBoard {
 
     protected int[][] getSolution() {
         if (solution == null) {
-            int[][] tmp = deepCopy(gameBoard);
+            int[][] tmp = deepCopy(initialPuzzle);
             if (solve(0, 0, tmp)) {
                 solution = tmp;
             } else {
@@ -243,7 +244,7 @@ public class GameBoard {
         return java.util.Arrays.stream(matrix).map(el -> el.clone()).toArray($ -> matrix.clone());
     }
 
-    public boolean isGiven(int row, int col) {
+    protected boolean isGiven(int row, int col) {
         return initialPuzzle[row][col] != EMPTY_CELL;
     }
 }
