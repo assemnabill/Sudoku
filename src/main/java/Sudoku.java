@@ -2,7 +2,6 @@ import GameEngine.GameEngine;
 import controlP5.*;
 import processing.core.PApplet;
 import java.util.Arrays;
-import java.util.List;
 
 public class Sudoku extends PApplet {
     GameEngine gameEngine;
@@ -47,12 +46,10 @@ public class Sudoku extends PApplet {
 
     private void initGUI() {
         this.gui = new ControlP5(this);
-
         final int orange = color(0xCC, 0x99, 0x33);
         final int red = color(0xCC, 0, 0);
         final int green = color(0, 0x99, 0);
         final int blue = color(0x33, 0x99, 0x99);
-        final int bgColor = color(0xFF, 0xFF, 0xCC);
 
         textAlign(CENTER, CENTER);
         textSize(27);
@@ -75,15 +72,18 @@ public class Sudoku extends PApplet {
                 .setText("")
                 .setFont(new ControlFont(createFont(s.FONT_NAME, s.FONT_SIZE)))
                 .setPosition(s.OFFSET, s.SIZE_BOARD + s.OFFSET + s.BTN_OFFSET);
+        addBtnBar();
+        drawBoard();
+        addListeners();
+    }
 
+    private void addBtnBar() {
         buttonBar = gui.addButtonBar(s.BUTTON_BAR)
                 .setColorActive(color(0xCC, 0x99, 0x33))
                 .setColorValueLabel(color(30)) // text color
                 .setColorBackground(color(255))
                 .setVisible(false)
                 .setColorForeground(color(0xCA, 0x99, 0x33)); // hover color
-        drawBoard();
-        addListeners();
     }
 
     private void drawBoard() {
@@ -131,7 +131,7 @@ public class Sudoku extends PApplet {
         checkBtn.onClick(callbackEvent -> {
             boolean result = gameEngine.checkSolution();
             resetGUI();
-            notify(s.CHK_BTN_NOTIFICATION + result);
+            notify(s.CHK_BTN_NOTIFICATION + (result? "correct" : "wrong"));
         });
 
         solveBtn.onClick(callbackEvent -> {
@@ -146,9 +146,12 @@ public class Sudoku extends PApplet {
             notify(s.RST_BTN_NOTIFICATION);
         });
         newBtn.onClick(callbackEvent -> {
-            gameEngine.generateNewPuzzle();
-            resetGUI();
-            notify(s.NEW_BTN_NOTIFICATION);
+            try {
+                gameEngine.generateNewPuzzle();
+            } finally {
+                resetGUI();
+                notify(s.NEW_BTN_NOTIFICATION);
+            }
         });
     }
 
@@ -156,82 +159,76 @@ public class Sudoku extends PApplet {
         // identify position
         int col = floor(map(mouseX, s.OFFSET, s.SIZE_BOARD + s.OFFSET, 0, 9));
         int row = floor(map(mouseY, s.OFFSET, s.SIZE_BOARD + s.OFFSET, 0, 9));
-        System.out.println(!buttonBar.isVisible());
         boolean boardIsClicked = (col >= 0 && col < 9)
                 && (row >= 0 && row < 9);
 
         if (boardIsClicked && !gameEngine.isGiven(row, col)) {
-            System.out.println("CLICK ON BOARD " + "row: " + row + " col: " + col);
-            if (!buttonBar.isVisible())  {
-                showPossibilities(row, col);
-//                if (selectedVal != null)
-//                setSquare(row, col, selectedVal);
+            if (!buttonBar.isVisible()) {
+                try {
+                    showPossibilities(row, col);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             } else {
                 buttonBar.setVisible(false);
             }
+        } else {
+            resetGUI();
         }
     }
 
     private void showPossibilities(int row, int col) {
+        resetGUI();
         selectedRow = row;
         selectedCol = col;
         int[] possibilities = gameEngine.calculatePossibilities(row, col);
-        String[] items = split(Arrays.toString(possibilities)
-                .replaceAll("\\[|]|,|\\s", "\t"), "\t\t");
+        if (possibilities.length >= 1) {
+            resetGUI();
+            addBtnBar();
 
-        buttonBar.setPosition(mouseX, mouseY).setVisible(true)
-                .setSize((int) Math.ceil(possibilities.length * s.SIZE_CELL * 0.5),
-                        (int) Math.ceil(s.SIZE_CELL * 0.5))
-                .addItems(items);
+            String[] items = split(Arrays.toString(possibilities)
+                    .replaceAll("\\[|]|,|\\s", "\t"), "\t\t");
 
-        buttonBar.onChange(ev -> {
-            int index = (int) buttonBar.getValue();
-            if (index < possibilities.length) {
-                int selectedVal = possibilities[index];
-                setSquare(selectedRow, selectedCol, selectedVal);
-                List<String> list = Arrays.stream(items).toList();
-                buttonBar.removeItems(list);
-                buttonBar.setSize(0,0);
-            }
-        });
+            buttonBar = buttonBar.setPosition(mouseX, mouseY).setVisible(true)
+                    .setSize((int) Math.ceil(possibilities.length * s.SIZE_CELL * 0.5),
+                            (int) Math.ceil(s.SIZE_CELL * 0.5))
+                    .addItems(items);
+
+            buttonBar = buttonBar.onChange(ev -> {
+                int index = (int) buttonBar.getValue();
+                if (index < possibilities.length) {
+                    int selectedVal = possibilities[index];
+                    if (selectedVal >= 0) {
+                        setSquare(selectedRow, selectedCol, selectedVal);
+                        resetGUI();
+                    }
+                }
+            });
+        } else {
+            notify("Can't find appropriate digit for this square.\n");
+        }
     }
 
     private void setSquare(int row, int col, int value) {
         try {
             if (gameEngine.writeCell(row, col, value)) {
-                // set it graphically
-                resetGUI();
+                resetGUI(); // set it graphically
             }
         } catch (IllegalArgumentException ex) {
-//            flash(row, col);
-//            notify(ex.getMessage());
-            //        resetGUI();
+            ex.printStackTrace();
         }
-    }
-
-    private void flash(int row, int col) {
-        // todo fix
-//        frameRate(1);
-        fill(color(0xff, 0xc0, 0xb8, 60)); //#FFC0B8
-        // flash col
-        rect(s.OFFSET + (s.SIZE_CELL * col), s.OFFSET, s.SIZE_CELL, s.SIZE_BOARD);
-        // flash row
-        rect(s.OFFSET, s.OFFSET + (s.SIZE_CELL * row), s.SIZE_BOARD, s.SIZE_CELL);
     }
 
     private void notify(String notification) {
-        Controller<?> controller = gui.getController("statusBar");
-        if (controller != null) {
-            if (!controller.getStringValue().equals(notification)) {
-                controller.setStringValue(notification);
-            }
+        if (statusBar != null) {
+            statusBar.setStringValue(notification);
         }
     }
 
-    public void draw() {
-    }
+    public void draw() { }
 
     private void resetGUI() {
+        buttonBar.remove();
         background(s.COLOR_BG);
         drawBoard();
     }

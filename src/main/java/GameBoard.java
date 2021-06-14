@@ -23,22 +23,19 @@ public class GameBoard {
 
     // constructor is for testing
     protected GameBoard(int[][] gameBoard) {
+        this.initialPuzzle = gameBoard;
         this.gameBoard = gameBoard;
     }
 
     protected int[][] generatePuzzle() {
         int[][] generated = new int[9][9];
         boolean isSolvable = false;
-        // for analysis purpose
-//        int permutations = 0;
-
         while (!isSolvable) {
             generated = initPuzzle();
             this.initialPuzzle = deepCopy(generated);
             this.gameBoard = deepCopy(this.initialPuzzle);
             isSolvable = solve(0, 0, generated);
             this.solution = deepCopy(generated);
-//            permutations++;
         }
         return generated;
     }
@@ -51,8 +48,10 @@ public class GameBoard {
 
         while (i < CLUES_COUNT) {
             int[] primes = new int[]{1, 2, 3, 5, 7};
-            row = (int) (randomValue() * (Math.random() * primes[Math.min(randomValue(), randomValue()) % 5])) % 9;
-            col = (int) (randomValue() * (Math.random() * primes[Math.min(randomValue(), randomValue()) % 5])) % 9;
+            row = (int) (randomValue() * (Math.random() * primes[Math.min(randomValue(),
+                    randomValue()) % 5])) % 9;
+            col = (int) (randomValue() * (Math.random() * primes[Math.min(randomValue(),
+                    randomValue()) % 5])) % 9;
 
             if (isEmpty(row, col, cells)) {
                 // look for a random valid digit
@@ -71,7 +70,9 @@ public class GameBoard {
     }
 
     private boolean isEmpty(int row, int col, int[][] board) {
-        if (board == null) { board = this.gameBoard; }
+        if (board == null) {
+            board = this.gameBoard;
+        }
         return board[row][col] == EMPTY_CELL;
     }
 
@@ -98,7 +99,7 @@ public class GameBoard {
                 }
             }
         }
-        cells[row][col] = EMPTY_CELL; // reset on backtrack
+        cells[row][col] = EMPTY_CELL; // reset cells on backtrack
         return false;
     }
 
@@ -127,7 +128,7 @@ public class GameBoard {
             throw new IndexOutOfBoundsException("Cannot set square at (" + row + ", " + col + ")");
         }
 
-        if (gameBoard[row][col] == EMPTY_CELL || !isGiven(row,col)) {
+        if (gameBoard[row][col] == EMPTY_CELL || !isGiven(row, col)) {
             if (isValidValue(row, col, digit, gameBoard)) {
                 gameBoard[row][col] = digit;
                 return true;
@@ -224,14 +225,14 @@ public class GameBoard {
 
         int i = 0; // init region array
         while (i < GRID_SIZE)
-        for (int k = 0; k < SIDE_SIZE; k++) {
-            for (int m = 0; m < SIDE_SIZE; m++) {
-                currReg[i] = tmp[regionRowOffset+ k][regionColOffset+ m];
-                i++;
+            for (int k = 0; k < SIDE_SIZE; k++) {
+                for (int m = 0; m < SIDE_SIZE; m++) {
+                    currReg[i] = tmp[regionRowOffset + k][regionColOffset + m];
+                    i++;
+                }
             }
-        }
 
-        possibilities = IntStream.range(1, GRID_SIZE +1)
+        possibilities = IntStream.range(1, GRID_SIZE + 1)
                 .filter(x -> IntStream.of(currRow).distinct().noneMatch(p -> p == x) &&
                         IntStream.of(currCol).distinct().noneMatch(p -> p == x) &&
                         IntStream.of(currReg).distinct().noneMatch(p -> p == x))
