@@ -11,6 +11,10 @@ class GameCoreTest {
     int[][] _puzzle;
     int[][] _solution;
 
+    /**
+     * Before each test initialize game board with a given unique puzzle,
+     * which has only one unique solution.
+     */
     @BeforeEach
     void setUp() {
         // A puzzle with one unique solution
@@ -40,6 +44,10 @@ class GameCoreTest {
         this._core = new GameCore(this._gameBoard);
     }
 
+    /**
+     * Test setting a cell value with valid value.
+     * Value should be set correctly.
+     */
     @Test
     void whenWritingCellWithValidValue() {
         int value = 3;
@@ -48,14 +56,50 @@ class GameCoreTest {
         Assertions.assertEquals(value, result);
     }
 
+    /**
+     * Test setting a cell value with faulty value (not suitable in context of solution).
+     * IllegalArgumentException should be thrown.
+     */
     @Test
-    public void whenWritingCellWithInvalidValue() {
+    public void whenWritingCellWithFaultyValue() {
         Exception exception = assertThrows(IllegalArgumentException.class,
                 () -> {
                     _core.writeCell(0,1, 8);
                 });
 
         String expectedMessage = "Cannot set square to 8 at (0, 1)";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    /**
+     * Test setting a cell value with forbidden value (not a digit between 1-9).
+     * IllegalArgumentException should be thrown.
+     */
+    @Test
+    public void whenWritingCellWithForbiddenValue() {
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> {
+                    _core.writeCell(0,1, 11);
+                });
+
+        String expectedMessage = "Cannot set square to 11 at (0, 1)";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    /**
+     * Test setting a cell value with invalid indexes.
+     * IllegalArgumentException should be thrown.
+     */
+    @Test
+    public void whenWritingCellWithInvalidIndex() {
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> {
+                    _core.writeCell(0,10, 11);
+                });
+
+        String expectedMessage = "Cannot set square to 11 at (0, 10)";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }

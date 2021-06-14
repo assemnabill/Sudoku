@@ -9,6 +9,10 @@ class GameBoardTest {
     int[][] _puzzle;
     int[][] _solution;
 
+    /**
+     * Before each test initialize game board with a given unique puzzle,
+     * which has only one unique solution.
+     */
     @BeforeEach
     void setUp() {
         // A puzzle with only one unique solution
@@ -37,6 +41,9 @@ class GameBoardTest {
         this._gameBoard = new GameBoard(_puzzle);
     }
 
+    /**
+     * Test setting a cell value with a valid value and valid row and col indexes.
+     */
     @Test
     void whenSettingCell() {
         int value = 3;
@@ -46,6 +53,10 @@ class GameBoardTest {
         Assertions.assertEquals(value, result);
     }
 
+    /**
+     * Test setting a cell value with invalid row and col indexes.
+     * An IndexOutOfBoundsException should be thrown.
+     */
     @Test
     public void whenSettingSquareOutOfBounds() {
         Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> {
@@ -56,6 +67,9 @@ class GameBoardTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
+    /**
+     * Test getting a cell value with valid row and col indexes.
+     */
     @Test
     void whenGettingCell() {
         int row = 0;
@@ -64,6 +78,10 @@ class GameBoardTest {
         Assertions.assertEquals(_puzzle[row][col], result);
     }
 
+    /**
+     * Test getting a cell value with invalid row and col indexes.
+     * An IndexOutOfBoundsException should be thrown.
+     */
     @Test
     public void whenGettingSquareOutOfBounds() {
         Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> {
@@ -75,6 +93,12 @@ class GameBoardTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
+    /**
+     * Test solving the unique puzzle provided in test setup.
+     * The puzzle should be solved and the solution should:
+     * 1. not be null or empty
+     * 2. be identical with the given unique solution in test setup
+     */
     @Test
     void whenSolvingPuzzle() {
         int[][] result = _gameBoard.getSolution();
@@ -85,6 +109,13 @@ class GameBoardTest {
         Assertions.assertArrayEquals(_solution, result);
     }
 
+    /**
+     * Test generating sudoku puzzles.
+     * The generated puzzle should:
+     * 1. not be null or empty
+     * 2. be solvable
+     * 3. have it's solution saved within the board
+     */
     @Test
     void whenGeneratingPuzzle() {
         int[][] result = _gameBoard.generatePuzzle();
@@ -96,18 +127,27 @@ class GameBoardTest {
         assertArrayEquals(result, _gameBoard.getSolution());
     }
 
+    /**
+     * Test solution testing with a correct solution.
+     * When testing a correct solution it should be identical with the saved solution (accepted).
+     */
     @Test
     void whenTestingCorrectSolution() {
+        // copy given solution values into board
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 _gameBoard.setCell(i,j, _solution[i][j]);
             }
         }
-        _gameBoard.getSolution();
+        _gameBoard.getSolution(); // test solution
         // it should be accepted
         assertTrue(_gameBoard.testSolution());
     }
 
+    /**
+     * Test solution testing with a wrong solution.
+     * When testing a wrong solution it should be rejected.
+     */
     @Test
     void whenTestingWrongSolution() {
         for (int i = 0; i < 8; i++) {
@@ -116,7 +156,7 @@ class GameBoardTest {
             }
         }
         _gameBoard.getSolution();
-        // it should be declined
+        // it should be rejected
         assertFalse(_gameBoard.testSolution());
     }
 

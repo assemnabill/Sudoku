@@ -19,11 +19,12 @@ public class GameCore implements GameEngine {
 
     @Override
     public boolean writeCell(int row, int col, int digit) throws IllegalArgumentException {
-        if (board.setCell(row, col, digit)) {
+        if (digit > 0 && digit <= 9 && board.setCell(row, col, digit)) {
             System.out.println("WRITE " + digit + "  (" + row + ", " + col + ")");
             return true;
         } else {
-            throw new IllegalArgumentException("Invalid Value. Cannot set square to " + digit + " at (" + row + ", " + col + ")");
+            throw new IllegalArgumentException("Invalid Value. Cannot set square to "
+                    + digit + " at (" + row + ", " + col + ")");
         }
     }
 
