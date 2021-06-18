@@ -18,7 +18,7 @@ Sudoku is a logic puzzle with a schematic basic structure: Except for special ty
 
 To execute, just run `gradle run`.
 
-### Übersicht über die Dateien und die Lines of Code
+### Overview of the files and the lines of code
 
 - [Class] GameBoard.java  250 lines (LOG)
 - [Class] GameCore.java 60 lines  (LOG)
