@@ -15,7 +15,6 @@ class GameBoardTest {
      */
     @BeforeEach
     void setUp() {
-        // A puzzle with only one unique solution
         _puzzle = new int[][]{
                 {0, 0, 0, 8, 0, 1, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 4, 3},
@@ -49,8 +48,7 @@ class GameBoardTest {
         int value = 3;
         _gameBoard.setCell(0,1, value);
         int result = _gameBoard.getCell(0,1);
-        // it should be written
-        Assertions.assertEquals(value, result);
+        Assertions.assertEquals(value, result); // it should be written
     }
 
     /**
@@ -87,7 +85,6 @@ class GameBoardTest {
         Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> {
             _gameBoard.getCell(9,9);
         });
-
         String expectedMessage = "Index 9 out of bounds for length 9";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
@@ -102,11 +99,10 @@ class GameBoardTest {
     @Test
     void whenSolvingPuzzle() {
         int[][] result = _gameBoard.getSolution();
-        // solution shouldn't be null or empty
-        assertNotNull(result);
-        assertNotEquals(result, new int[9][9]);
-        // solution must be correct
-        Assertions.assertArrayEquals(_solution, result);
+
+        assertNotNull(result); // shouldn't be null
+        assertNotEquals(result, new int[9][9]); // shouldn't be empty
+        Assertions.assertArrayEquals(_solution, result); // must be correct
     }
 
     /**
@@ -120,11 +116,9 @@ class GameBoardTest {
     void whenGeneratingPuzzle() {
         int[][] result = _gameBoard.generatePuzzle();
         System.out.println(_gameBoard.toString());
-        // it shouldn't be null or empty
-        assertNotNull(result);
-        assertNotEquals(result, new int[9][9]);
-        // it should be solvable and has one solution
-        assertArrayEquals(result, _gameBoard.getSolution());
+        assertNotNull(result);  // shouldn't be null
+        assertNotEquals(result, new int[9][9]); // shouldn't be empty
+        assertArrayEquals(result, _gameBoard.getSolution()); // should be solvable
     }
 
     /**
@@ -140,8 +134,7 @@ class GameBoardTest {
             }
         }
         _gameBoard.getSolution(); // test solution
-        // it should be accepted
-        assertTrue(_gameBoard.testSolution());
+        assertTrue(_gameBoard.testSolution()); // it should be accepted
     }
 
     /**
@@ -156,8 +149,7 @@ class GameBoardTest {
             }
         }
         _gameBoard.getSolution();
-        // it should be rejected
-        assertFalse(_gameBoard.testSolution());
+        assertFalse(_gameBoard.testSolution()); // it should be rejected
     }
 
 }

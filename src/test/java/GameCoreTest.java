@@ -2,7 +2,6 @@ import GameEngine.GameEngine;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameCoreTest {
@@ -17,7 +16,6 @@ class GameCoreTest {
      */
     @BeforeEach
     void setUp() {
-        // A puzzle with one unique solution
         _puzzle = new int[][]{
                 {0, 0, 0, 8, 0, 1, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 4, 3},
@@ -66,7 +64,6 @@ class GameCoreTest {
                 () -> {
                     _core.writeCell(0,1, 8);
                 });
-
         String expectedMessage = "Cannot set square to 8 at (0, 1)";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
@@ -98,10 +95,8 @@ class GameCoreTest {
                 () -> {
                     _core.writeCell(0,10, 11);
                 });
-
         String expectedMessage = "Cannot set square to 11 at (0, 10)";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }
-
 }

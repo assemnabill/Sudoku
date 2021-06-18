@@ -57,5 +57,4 @@ public class GameCore implements GameEngine {
     public int[] calculatePossibilities(int row, int col) {
         return board.calcPossibilities(row, col);
     }
-
 }

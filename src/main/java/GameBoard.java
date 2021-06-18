@@ -5,12 +5,12 @@ import java.util.stream.IntStream;
 
 public class GameBoard {
     // Constants with package visibility
-    static final int EMPTY_CELL = 0;
-    static final int GRID_SIZE = 9;
-    static final int SIDE_SIZE = 3;
-    // Sudoku fanatics have claimed that the smallest number
-    // of starting clues a Sudoku puzzle can contain is 17.
-    static final int CLUES_COUNT = 19;
+    final int EMPTY_CELL = 0;
+    final int GRID_SIZE = 9;
+    final int SIDE_SIZE = 3;
+    /* Sudoku fanatics have claimed that the smallest number
+     * of starting clues a Sudoku puzzle can contain is 17. */
+    final int CLUES_COUNT = 19;
     private int[][] initialPuzzle = new int[9][9];
     private int[][] gameBoard = new int[9][9];
     private int[][] solution = null;
@@ -237,7 +237,6 @@ public class GameBoard {
                         IntStream.of(currCol).distinct().noneMatch(p -> p == x) &&
                         IntStream.of(currReg).distinct().noneMatch(p -> p == x))
                 .boxed().collect(Collectors.toCollection(ArrayList::new));
-        System.out.println("possibilities: " + Arrays.toString(possibilities.toArray()));
         return possibilities.stream().mapToInt(x -> x).toArray();
     }
 
