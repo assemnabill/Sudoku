@@ -8,7 +8,7 @@ Sudoku is a logic puzzle with a schematic basic structure: Except for special ty
 
 ### Screenshots
 
-![](/home/assem/Pictures/Peek 2021-06-18 16-19.gif)
+![](https://s20.directupload.net/images/210618/isa3zups.gif)
 
 #### Prerequisites
 
