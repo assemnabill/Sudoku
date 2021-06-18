@@ -37,7 +37,7 @@ To execute, just run `gradle run`.
 - Find a better distribution of clues.
 - Setting input from keyboard as well.
 
-### License
+### MIT License
 
 Copyright 2021 Assem Hussein
 
