@@ -2,7 +2,7 @@
 
 This is a Sudoku game written in Java with help of Processing core library. This game was developed within the scope of a final project for the module "Programming interactive systems" at THM — University of Applied Sciences 2021 (See license). Have fun! 
 
-### Sudoku in nutshell
+### Sudoku in a nutshell
 
 Sudoku is a logic puzzle with a schematic basic structure: Except for special types of games and variants (such as the rather unknown circle Sudoku or the so-called "Samurai Sudoku"), all number puzzles are structured more or less the same, Sudoku-style: The base consists of 9x9 squares or cells. More or less evenly distributed in the puzzle are already 10 to 20 digits. The more digits are given, the easier is the solution. The goal of the game is to fill up all empty cells with the digits 1 to 9 in such a way that each digit appears only once in a column (vertical), in a row (horizontal) and in a block (3 times 3 cells).
 
@@ -18,7 +18,7 @@ Sudoku is a logic puzzle with a schematic basic structure: Except for special ty
 
 To execute, just run `gradle run`.
 
-### Übersicht über die Dateien und die Lines of Code
+### Overview of the files and the lines of code
 
 - [Class] GameBoard.java  250 lines (LOG)
 - [Class] GameCore.java 60 lines  (LOG)
