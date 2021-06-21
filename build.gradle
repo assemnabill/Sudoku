@@ -35,7 +35,7 @@ dependencies {
     implementation compileClasspath(urlFile('https://repo.huaweicloud.com/repository/maven/controlp5/controlp5/2.2.4/controlp5-2.2.4.jar', 'controlp5'))
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    implementation files('src/main/java/core.jar')
+    implementation files('core.jar')
 }
 
 test {

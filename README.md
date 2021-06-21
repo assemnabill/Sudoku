@@ -1,4 +1,5 @@
 # Sudoku
+Autor: Assem Hussein, 5312065
 
 This is a Sudoku game written in Java with help of Processing core library. This game was developed within the scope of a final project for the module "Programming interactive systems" at THM — University of Applied Sciences 2021 (See license). Have fun! 
 
@@ -20,11 +21,63 @@ To execute, just run `gradle run`.
 
 ### Overview of the files and the lines of code
 
-- [Class] GameBoard.java  250 lines (LOG)
-- [Class] GameCore.java 60 lines  (LOG)
-- [Class] GUISettings.java 25 lines (GUI)
-- [Class] Sudoku.java 250 lines (GUI)
-- [Interface] GameEngine.java 20 lines (LOG)
+```
+Sudoku/
+├── build.gradle
+├── core.jar
+├── gradle
+│   └── wrapper
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+├── gradlew
+├── gradlew.bat
+├── README.md
+├── settings.gradle
+└── src
+    ├── main
+    │   ├── java
+    │   │   ├── GameBoard.java
+    │   │   ├── GameCore.java
+    │   │   ├── GameEngine
+    │   │   │   └── GameEngine.java
+    │   │   ├── GUISettings.java
+    │   │   └── Sudoku.java
+    │   └── resources
+    │       └── bg.png
+    └── test
+        └── java
+            └── GameBoardTest.java
+
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Java                             6             81             66            518
+Bourne Shell                     1             23             36            126
+Markdown                         1             23              0             71
+DOS Batch                        1             21              2             66
+Gradle                           2              7              5             35
+-------------------------------------------------------------------------------
+SUM:                            11            155            109            816
+-------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------------
+File                                                      blank        comment           code
+---------------------------------------------------------------------------------------------
+./src/main/java/GameBoard.java                               28             18            186
+./src/main/java/GameCore.java                                11              1             48
+./src/main/java/GameEngine/GameEngine.java                    8              0             11
+./src/main/java/Sudoku.java                                  23              6            172
+./src/main/java/GUISettings.java                              0              0             14
+./src/test/java/GameBoardTest.java                           11             41             87
+./gradlew                                                    23             36            126
+./README.md                                                  23              0             71
+./gradlew.bat                                                21              2             66
+./build.gradle                                                6              5             34
+./settings.gradle                                             1              0              1
+---------------------------------------------------------------------------------------------
+SUM:                                                        155            109            816
+---------------------------------------------------------------------------------------------
+```
 
 ###  References
 

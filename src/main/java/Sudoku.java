@@ -35,38 +35,29 @@ public class Sudoku extends PApplet {
     private Button createButton(String name, int x, int y, int color) {
         ControlFont font = new ControlFont(createFont(s.FONT_NAME, s.FONT_SIZE));
         CColor cColor = new CColor();
-        cColor.setBackground(color)
-                .setForeground(color(0x78, 0x18, 0xcc)); // 7818CC
-        Button b = gui.addButton(name).setPosition(x, y)
-                .setSize(s.BTN_WIDTH, s.BTN_HEIGHT)
-                .setColor(cColor);
+        cColor.setBackground(color).setForeground(color(0x78, 0x18, 0xcc)); // 7818CC
+        Button b = gui.addButton(name).setPosition(x, y).setSize(s.BTN_WIDTH, s.BTN_HEIGHT).setColor(cColor);
         b.getCaptionLabel().setFont(font);
         return b;
     }
 
     private void initGUI() {
         this.gui = new ControlP5(this);
-        final int orange = color(0xCC, 0x99, 0x33);
-        final int red = color(0xCC, 0, 0);
-        final int green = color(0, 0x99, 0);
-        final int blue = color(0x33, 0x99, 0x99);
 
-        textAlign(CENTER, CENTER);
         textSize(27);
         noStroke();
         background(color(s.COLOR_BG));
 
         int btnXPos = 2 * s.OFFSET + s.SIZE_BOARD;
         int btnYPos = s.OFFSET + s.BTN_OFFSET + s.BTN_HEIGHT;
-        checkBtn = createButton(s.BTN_CHECK, btnXPos, s.OFFSET, orange);
-        solveBtn = createButton(s.BTN_SOLVE, btnXPos, btnYPos, red);
+        checkBtn = createButton("Check Solution", btnXPos, s.OFFSET, color(0xCC, 0x99, 0x33));
+        solveBtn = createButton("Solve Puzzle", btnXPos, btnYPos, color(0xCC, 0, 0));
         btnYPos += s.BTN_OFFSET + s.BTN_HEIGHT;
-        resetBtn = createButton(s.BTN_RESET, btnXPos, btnYPos, green);
+        resetBtn = createButton("Start Over", btnXPos, btnYPos, color(0, 0x99, 0));
         btnYPos += s.BTN_OFFSET + s.BTN_HEIGHT;
-        newBtn = createButton(s.BTN_NEW, btnXPos, btnYPos, blue);
+        newBtn = createButton("New Puzzle", btnXPos, btnYPos, color(0x33, 0x99, 0x99));
 
-        statusBar = gui.addLabel(s.STATUS_BAR).setColorLabel(0)
-                .setWidth(s.SIZE_BOARD).setHeight(s.SIZE_CELL)
+        statusBar = gui.addLabel("statusBar").setColorLabel(0).setWidth(s.SIZE_BOARD).setHeight(s.SIZE_CELL)
                 .setText("").setFont(new ControlFont(createFont(s.FONT_NAME, s.FONT_SIZE)))
                 .setPosition(s.OFFSET, s.SIZE_BOARD + s.OFFSET + s.BTN_OFFSET);
         addBtnBar();
@@ -76,11 +67,8 @@ public class Sudoku extends PApplet {
     }
 
     private void addBtnBar() {
-        buttonBar = gui.addButtonBar(s.BUTTON_BAR)
-                .setColorActive(color(0xCC, 0x99, 0x33))
-                .setColorValueLabel(color(30)) // text color
-                .setColorBackground(color(255))
-                .setVisible(false)
+        buttonBar = gui.addButtonBar( "possibilities").setColorActive(color(0xCC, 0x99, 0x33))
+                .setColorValueLabel(color(30)).setColorBackground(color(255)).setVisible(false)
                 .setColorForeground(color(0xCA, 0x99, 0x33)); // hover color
     }
 
@@ -91,14 +79,12 @@ public class Sudoku extends PApplet {
                 fill(!isGiven ? 255 : color(220, 220, 220));
                 stroke(color(0xcc, 0x83, 0x56)); // CC8356
                 strokeWeight(2);
-                rect(s.OFFSET + (s.SIZE_CELL * col),
-                        s.OFFSET + (s.SIZE_CELL * row), s.SIZE_CELL, s.SIZE_CELL);
+                rect(s.OFFSET + (s.SIZE_CELL * col), s.OFFSET + (s.SIZE_CELL * row), s.SIZE_CELL, s.SIZE_CELL);
                 textAlign(CENTER);
                 fill(isGiven ? 0 : color(47, 79, 79));
                 if (gameEngine.readCellValue(row, col) != 0) {
                     textSize(25);
-                    text(str(gameEngine.readCellValue(row, col)),
-                            s.OFFSET + (s.SIZE_CELL * col + s.SIZE_CELL / 2),
+                    text(str(gameEngine.readCellValue(row, col)), s.OFFSET + (s.SIZE_CELL * col + s.SIZE_CELL / 2),
                             s.OFFSET + (s.SIZE_CELL * row + s.SIZE_CELL / 3 * 2));
                 }
             }
@@ -106,60 +92,46 @@ public class Sudoku extends PApplet {
         stroke(0);
         strokeWeight(3);
         // vertical separators
-        line(s.OFFSET + (s.SIZE_CELL * 3), s.OFFSET,
-                s.OFFSET + (s.SIZE_CELL * 3), s.OFFSET + s.SIZE_BOARD);
-        line(s.OFFSET + (s.SIZE_CELL * 6), s.OFFSET,
-                s.OFFSET + (s.SIZE_CELL * 6), s.OFFSET + s.SIZE_BOARD);
+        line(s.OFFSET + (s.SIZE_CELL * 3), s.OFFSET, s.OFFSET + (s.SIZE_CELL * 3), s.OFFSET + s.SIZE_BOARD);
+        line(s.OFFSET + (s.SIZE_CELL * 6), s.OFFSET, s.OFFSET + (s.SIZE_CELL * 6), s.OFFSET + s.SIZE_BOARD);
         // vertical boarders
         line(s.OFFSET, s.OFFSET, s.OFFSET, s.OFFSET + s.SIZE_BOARD);
-        line(s.OFFSET + (s.SIZE_CELL * 9), s.OFFSET,
-                s.OFFSET + (s.SIZE_CELL * 9), s.OFFSET + s.SIZE_BOARD);
+        line(s.OFFSET + (s.SIZE_CELL * 9), s.OFFSET, s.OFFSET + (s.SIZE_CELL * 9), s.OFFSET + s.SIZE_BOARD);
         // horizontal boarders
         line(s.OFFSET, s.OFFSET, s.OFFSET + s.SIZE_BOARD, s.OFFSET);
-        line(s.OFFSET, s.OFFSET + (s.SIZE_CELL * 9),
-                s.OFFSET + s.SIZE_BOARD, s.OFFSET + (s.SIZE_CELL * 9));
+        line(s.OFFSET, s.OFFSET + (s.SIZE_CELL * 9), s.OFFSET + s.SIZE_BOARD, s.OFFSET + (s.SIZE_CELL * 9));
         // horizontal separators
-        line(s.OFFSET, s.OFFSET + (s.SIZE_CELL * 3),
-                s.OFFSET + s.SIZE_BOARD, s.OFFSET + (s.SIZE_CELL * 3));
-        line(s.OFFSET, s.OFFSET + (s.SIZE_CELL * 6),
-                s.OFFSET + s.SIZE_BOARD, s.OFFSET + (s.SIZE_CELL * 6));
-
+        line(s.OFFSET, s.OFFSET + (s.SIZE_CELL * 3), s.OFFSET + s.SIZE_BOARD, s.OFFSET + (s.SIZE_CELL * 3));
+        line(s.OFFSET, s.OFFSET + (s.SIZE_CELL * 6), s.OFFSET + s.SIZE_BOARD, s.OFFSET + (s.SIZE_CELL * 6));
     }
 
     private void addListeners() {
-        checkBtn.onClick(callbackEvent -> {
+        checkBtn.onClick(e -> {
             if (!solved) {
                 boolean result = gameEngine.checkSolution();
                 solved = result;
-                updateGUI();
-                notify(s.CHK_BTN_NOTIFICATION + (result ? "correct" : "wrong"));
-            }else {
-                notify(s.PZL_SLVD_NOTIFICATION);
-            }
+                updateGUI("This solution is " + (result ? "correct" : "wrong"));
+            } else { notify("Puzzle is already solved!"); }
         });
 
-        solveBtn.onClick(callbackEvent -> {
+        solveBtn.onClick(e -> {
             gameEngine.solve();
             solved = true;
-            updateGUI();
-            notify(s.SLV_BTN_NOTIFICATION);
+            updateGUI("Solved!");
         });
 
-        resetBtn.onClick(callbackEvent -> {
+        resetBtn.onClick(e -> {
             gameEngine.startOver();
             solved = false;
             timer.reset();
-            updateGUI();
-            notify(s.RST_BTN_NOTIFICATION);
+            updateGUI("Puzzle ist reset!");
         });
-        newBtn.onClick(callbackEvent -> {
-            try {
-                gameEngine.generateNewPuzzle();
-            } finally {
+        newBtn.onClick(e -> {
+            try { gameEngine.generateNewPuzzle();}
+            finally {
                 solved = false;
                 timer.reset();
-                updateGUI();
-                notify(s.NEW_BTN_NOTIFICATION);
+                updateGUI("Generated new puzzle!");
             }
         });
     }
@@ -172,81 +144,58 @@ public class Sudoku extends PApplet {
 
         if (boardIsClicked && !gameEngine.isGiven(row, col)) {
             if (!buttonBar.isVisible()) {
-                try {
-                    showPossibilities(row, col);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                buttonBar.setVisible(false);
-            }
-        } else {
-            updateGUI();
-        }
+                try { showPossibilities(row, col); } catch (Exception e) { e.printStackTrace();}
+            } else { buttonBar.setVisible(false); }
+        } else { updateGUI(""); }
     }
 
     private void showPossibilities(int row, int col) {
-        updateGUI();
+        updateGUI("");
         selectedRow = row;
         selectedCol = col;
-        int[] possibilities = gameEngine.calculatePossibilities(row, col);
-        if (possibilities.length >= 1) {
-            updateGUI();
+        int[] options = gameEngine.calculatePossibilities(row, col);
+        if (options.length >= 1) {
+            updateGUI("");
             addBtnBar();
 
-            String[] items = split(Arrays.toString(possibilities)
-                    .replaceAll("\\[|]|,|\\s", "\t"), "\t\t");
-
-            buttonBar = buttonBar.setPosition(mouseX, mouseY).setVisible(true)
-                    .setSize((int) Math.ceil(possibilities.length * s.SIZE_CELL * 0.5),
-                            (int) Math.ceil(s.SIZE_CELL * 0.5))
-                    .addItems(items);
+            String[] items = split(Arrays.toString(options).replaceAll("\\[|]|,|\\s", "\t"), "\t\t");
+            buttonBar = buttonBar.setPosition(mouseX, mouseY).setVisible(true).setSize((int) Math.ceil(options.length * s.SIZE_CELL * 0.5),
+                    (int) Math.ceil(s.SIZE_CELL * 0.5)).addItems(items);
 
             buttonBar = buttonBar.onChange(ev -> {
                 int index = (int) buttonBar.getValue();
-                if (index < possibilities.length) {
-                    int selectedVal = possibilities[index];
-                    if (selectedVal >= 0) {
+                if (index < options.length) {
+                    int selectedVal = options[index];
+                    if (selectedVal >= 0)
                         setSquare(selectedRow, selectedCol, selectedVal);
-                        updateGUI();
-                    }
+                        updateGUI("");
                 }
             });
         } else {
-            if (!solved) {
-                notify(s.NO_DIGT_NOTIFICATION);
-            }
+            if (!solved) { notify("Can't find appropriate digit for this square.\n"); }
         }
     }
 
     private void setSquare(int row, int col, int value) {
-        try {
-            if (gameEngine.writeCell(row, col, value)) {
-                updateGUI(); // set it graphically
-            }
-        } catch (IllegalArgumentException ex) {
-            ex.printStackTrace();
-        }
+        // set it graphically
+        try { if (gameEngine.writeCell(row, col, value)) { updateGUI(""); }
+        } catch (IllegalArgumentException ex) { ex.printStackTrace(); }
     }
 
     private void notify(String notification) {
-        if (statusBar != null) {
-            statusBar.setStringValue(notification);
-        }
+        if (statusBar != null) { statusBar.setStringValue(notification); }
     }
 
     public void draw() {
-        if (!solved) {
-            timer.update();
-        }
-        background(loadImage("src/main/assets/bg.png"));
+        if (!solved) { timer.update(); }
+        background(loadImage("src/main/resources/bg.png"));
         fill(255);
-        text(timer.hour() + " : " + timer.minute() + " : " + timer.second(),
-                s.OFFSET + s.SIZE_CELL, s.OFFSET - 15);
+        text(timer.hour() + " : " + timer.minute() + " : " + timer.second(), s.OFFSET + s.SIZE_CELL, s.OFFSET - 15);
     }
 
-    private void updateGUI() {
+    private void updateGUI(String notification) {
         buttonBar.remove();
         drawBoard();
+        if (!notification.isEmpty()) { notify(notification); }
     }
 }

@@ -57,12 +57,8 @@ class GameBoardTest {
      */
     @Test
     public void whenSettingSquareOutOfBounds() {
-        Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> {
-            _gameBoard.setCell(9,9, 8);
-        });
-        String expectedMessage = "Index 9 out of bounds for length 9";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
+        Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> _gameBoard.setCell(9,9, 8));
+        assertTrue(exception.getMessage().contains("Index 9 out of bounds for length 9"));
     }
 
     /**
@@ -70,10 +66,8 @@ class GameBoardTest {
      */
     @Test
     void whenGettingCell() {
-        int row = 0;
-        int col = 4;
-        int result = _gameBoard.getCell(row,col);
-        Assertions.assertEquals(_puzzle[row][col], result);
+        int result = _gameBoard.getCell(0,4);
+        Assertions.assertEquals(_puzzle[0][4], result);
     }
 
     /**
@@ -82,12 +76,8 @@ class GameBoardTest {
      */
     @Test
     public void whenGettingSquareOutOfBounds() {
-        Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> {
-            _gameBoard.getCell(9,9);
-        });
-        String expectedMessage = "Index 9 out of bounds for length 9";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
+        Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> _gameBoard.getCell(9,9));
+        assertTrue(exception.getMessage().contains("Index 9 out of bounds for length 9"));
     }
 
     /**
@@ -99,7 +89,6 @@ class GameBoardTest {
     @Test
     void whenSolvingPuzzle() {
         int[][] result = _gameBoard.getSolution();
-
         assertNotNull(result); // shouldn't be null
         assertNotEquals(result, new int[9][9]); // shouldn't be empty
         Assertions.assertArrayEquals(_solution, result); // must be correct
@@ -115,7 +104,7 @@ class GameBoardTest {
     @Test
     void whenGeneratingPuzzle() {
         int[][] result = _gameBoard.generatePuzzle();
-        System.out.println(_gameBoard.toString());
+//        System.out.println(_gameBoard.toString());
         assertNotNull(result);  // shouldn't be null
         assertNotEquals(result, new int[9][9]); // shouldn't be empty
         assertArrayEquals(result, _gameBoard.getSolution()); // should be solvable
@@ -129,9 +118,7 @@ class GameBoardTest {
     void whenTestingCorrectSolution() {
         // copy given solution values into board
         for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                _gameBoard.setCell(i,j, _solution[i][j]);
-            }
+            for (int j = 0; j < 9; j++) { _gameBoard.setCell(i,j, _solution[i][j]); }
         }
         _gameBoard.getSolution(); // test solution
         assertTrue(_gameBoard.testSolution()); // it should be accepted
@@ -144,12 +131,9 @@ class GameBoardTest {
     @Test
     void whenTestingWrongSolution() {
         for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                _gameBoard.setCell(i,j, _solution[i][j]);
-            }
+            for (int j = 0; j < 8; j++) { _gameBoard.setCell(i,j, _solution[i][j]); }
         }
         _gameBoard.getSolution();
         assertFalse(_gameBoard.testSolution()); // it should be rejected
     }
-
 }

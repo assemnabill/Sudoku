@@ -21,7 +21,6 @@ public class GameBoard {
         generatePuzzle();
     }
 
-    // constructor is for testing
     protected GameBoard(int[][] gameBoard) {
         this.initialPuzzle = gameBoard;
         this.gameBoard = gameBoard;
@@ -48,16 +47,12 @@ public class GameBoard {
 
         while (i < CLUES_COUNT) {
             int[] primes = new int[]{1, 2, 3, 5, 7};
-            row = (int) (randomValue() * (Math.random() * primes[Math.min(randomValue(),
-                    randomValue()) % 5])) % 9;
-            col = (int) (randomValue() * (Math.random() * primes[Math.min(randomValue(),
-                    randomValue()) % 5])) % 9;
+            row = (int) (randomValue() * (Math.random() * primes[Math.min(randomValue(), randomValue()) % 5])) % 9;
+            col = (int) (randomValue() * (Math.random() * primes[Math.min(randomValue(), randomValue()) % 5])) % 9;
 
             if (isEmpty(row, col, cells)) {
                 // look for a random valid digit
-                while (!isValidValue(row, col, value, cells)) {
-                    value = randomValue();
-                }
+                while (!isValidValue(row, col, value, cells)) { value = randomValue(); }
                 cells[row][col] = value;
                 i++;
             }
@@ -70,9 +65,7 @@ public class GameBoard {
     }
 
     private boolean isEmpty(int row, int col, int[][] board) {
-        if (board == null) {
-            board = this.gameBoard;
-        }
+        if (board == null) { board = this.gameBoard; }
         return board[row][col] == EMPTY_CELL;
     }
 
@@ -87,9 +80,8 @@ public class GameBoard {
                 return true;
             }
         }
-        if (cells[row][col] != EMPTY_CELL) { // skip filled cells
-            return solve(row + 1, col, cells); // go a row down
-        }
+        // skip filled cells, go a row down
+        if (cells[row][col] != EMPTY_CELL) {return solve(row + 1, col, cells); }
         //  Try all possibilities
         for (int val = 1; val <= GRID_SIZE; ++val) {
             if (isValidValue(row, col, val, cells)) {
@@ -115,9 +107,7 @@ public class GameBoard {
         int regionColOffset = col - col % SIDE_SIZE;
         for (int k = 0; k < SIDE_SIZE; ++k) {
             for (int m = 0; m < SIDE_SIZE; ++m) {
-                if (val == board[regionRowOffset + k][regionColOffset + m]) {
-                    return false;
-                }
+                if (val == board[regionRowOffset + k][regionColOffset + m]) { return false; }
             }
         }
         return true; // no violations
@@ -157,14 +147,10 @@ public class GameBoard {
         // Row/Column traversal
         for (int i = 0; i < GRID_SIZE; i++) {
             int[] row = gameBoard[i];
-            if (i % SIDE_SIZE == 0) {
-                appendLine(buffer);
-            }
+            if (i % SIDE_SIZE == 0) { appendLine(buffer); }
             for (int j = 0; j < GRID_SIZE; j++) {
                 int value = row[j];
-                if (j % SIDE_SIZE == 0) {
-                    buffer.append(verticalSpace);
-                }
+                if (j % SIDE_SIZE == 0) { buffer.append(verticalSpace); }
                 appendValue(buffer, value);
             }
             buffer.append(verticalSpace);
@@ -204,11 +190,8 @@ public class GameBoard {
     protected int[][] getSolution() {
         if (solution == null) {
             int[][] tmp = deepCopy(initialPuzzle);
-            if (solve(0, 0, tmp)) {
-                solution = tmp;
-            } else {
-                System.out.println("Failed to solve");
-            }
+            if (solve(0, 0, tmp)) { solution = tmp; }
+            else { System.out.println("Failed to solve"); }
         }
         return deepCopy(solution);
     }
@@ -232,10 +215,9 @@ public class GameBoard {
                 }
             }
 
-        possibilities = IntStream.range(1, GRID_SIZE + 1)
-                .filter(x -> IntStream.of(currRow).distinct().noneMatch(p -> p == x) &&
-                        IntStream.of(currCol).distinct().noneMatch(p -> p == x) &&
-                        IntStream.of(currReg).distinct().noneMatch(p -> p == x))
+        possibilities = IntStream.range(1, GRID_SIZE + 1).filter(x -> IntStream.of(currRow).distinct()
+                .noneMatch(p -> p == x) && IntStream.of(currCol).distinct().noneMatch(p -> p == x)
+                && IntStream.of(currReg).distinct().noneMatch(p -> p == x))
                 .boxed().collect(Collectors.toCollection(ArrayList::new));
         return possibilities.stream().mapToInt(x -> x).toArray();
     }
